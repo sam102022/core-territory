@@ -1,0 +1,414 @@
+openapi: 3.0.2
+info:
+  title: Territories
+  description: |
+    Territory API is used to manage territories.
+  contact:
+    name: Sam
+    email: sam102022@hotmail.com
+  version: 1.0.0
+servers:
+  - url: 'http://localhost:8080'
+tags:
+   - name: Territories
+     description: Manage territories
+
+paths:
+  /v1/resources/territories/{id}:
+    get:
+      tags:
+      - Territories
+      summary: Get territory
+      description: Get territory
+      operationId: getTerritory
+      parameters:
+      - name: id
+        in: path
+        description: Territory's id
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Territory'
+        400:
+          description: Resource does not exist.
+          content:
+            application/json:
+              schema:
+                $ref: 'commons-models.openapi.yaml#/components/schemas/ApiError'
+
+  /v1/resources/territories/:
+    get:
+      tags:
+      - Territories
+      summary: Get territory
+      description: Get territory
+      operationId: consultTerritory
+      parameters:
+      - name: number
+        in: query
+        description: Territory's number
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Territory'
+        400:
+          description: Resource does not exist.
+          content:
+            application/json:
+              schema:
+                $ref: 'commons-models.openapi.yaml#/components/schemas/ApiError'
+
+    post:
+      tags: 
+        - Territories
+      summary: Ajoute ou modifie un territoire
+      description: Ajoute ou modifie un territoire
+      operationId: createUpdateTerritory
+      requestBody:
+        description: bean
+        required: true
+        content:
+          'application/json;charset=UTF-8':
+            schema:
+              $ref: '#/components/schemas/TerritoryIn'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Territory'
+        '400':
+          $ref: 'commons-models.openapi.yaml#/components/responses/BadRequest'
+        '500':
+          $ref: 'commons-models.openapi.yaml#/components/responses/InternalServerError'
+
+  /v1/territories/export:
+    post:
+      tags:
+        - Territories
+      summary: Export d'un ou plusieurs territoires
+      description: Export d'un ou plusieurs territoires
+      operationId: territoriesExport
+      requestBody:
+        description: bean
+        required: true
+        content:
+          'application/json;charset=UTF-8':
+            schema:
+              $ref: 'commons-models.openapi.yaml#/components/schemas/PrintSettings'
+      responses:
+        200:
+          $ref: 'commons-models.openapi.yaml#/components/responses/OkStream'
+        '400':
+          $ref: 'commons-models.openapi.yaml#/components/responses/BadRequest'
+        '500':
+          $ref: 'commons-models.openapi.yaml#/components/responses/InternalServerError'
+          
+  /v1/resources/territories/{id}/toBuild:
+    get:
+      tags: 
+        - Territories
+      summary: Export d'un territoire pour l'imprimer et le plastifier
+      description: Export d'un territoire pour l'imprimer et le plastifier
+      operationId: territoryToBuild
+      parameters:
+      - name: id
+        in: path
+        description: Territory's id
+        required: true
+        schema:
+          type: integer
+          format: int32
+      - name: formatPhoto
+        in: query
+        description: Photo's format
+        required: true
+        schema:
+          type: string
+          enum: [A5]
+      responses:
+        200:
+          $ref: 'commons-models.openapi.yaml#/components/responses/OkStream'
+        '400':
+          $ref: 'commons-models.openapi.yaml#/components/responses/BadRequest'
+        '500':
+          $ref: 'commons-models.openapi.yaml#/components/responses/InternalServerError'
+
+  /v1/resources/territories/{id}/addresses:
+    get:
+      tags:
+      - Territories
+      summary: Get territory's addresses
+      description: Get territory's addresses
+      operationId: getTerritoryAddresses
+      parameters:
+      - name: id
+        in: path
+        description: Territory's id (Example&#058; 001197)
+        required: true
+        schema:
+          type: integer
+          format: int32
+        example: 1197.0
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items :
+                  $ref: '#/components/schemas/TerritoryAddress'
+        400:
+          description: Resource does not exist.
+          content:
+            application/json:
+              schema:
+                $ref: 'commons-models.openapi.yaml#/components/schemas/ApiError'
+
+  /v1/resources/territories/{id}/addresses/export:
+    post:
+      tags: 
+        - Territories
+      summary: Export des adresses d'un territoire
+      description: Export des adresses d'un territoire
+      operationId: territoryAddressesExport
+      requestBody:
+        description: bean
+        required: true
+        content:
+          'application/json;charset=UTF-8':
+            schema:
+              $ref: 'commons-models.openapi.yaml#/components/schemas/PrintSettings'
+      parameters:
+      - name: id
+        in: path
+        description: Territory's id
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        200:
+          $ref: 'commons-models.openapi.yaml#/components/responses/OkStream'
+        '400':
+          $ref: 'commons-models.openapi.yaml#/components/responses/BadRequest'
+        '500':
+          $ref: 'commons-models.openapi.yaml#/components/responses/InternalServerError'
+          
+  /v1/resources/territories/{id}/bookings:
+    get:
+      tags:
+      - Territories
+      summary: Get reservations
+      description: Get reservations
+      operationId: getReservations
+      parameters:
+      - name: id
+        in: path
+        description: Territory's id (Example&#058; 197)
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items :
+                   $ref: 'api-territory-booking.openapi.yaml#/components/schemas/Booking'
+        400:
+          description: Resource does not exist.
+          content:
+            application/json:
+              schema:
+                $ref: 'commons-models.openapi.yaml#/components/schemas/ApiError'
+
+    delete:
+      tags:
+      - Territories
+      summary: Delete reservations
+      description: Delete reservations
+      operationId: deleteReservations
+      parameters:
+      - name: id
+        in: path
+        description: Territory's id (Example&#058; 197)
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        204:
+          description: successful operation
+        400:
+          description: Resource does not exist.
+          content:
+            application/json:
+              schema:
+                $ref: 'commons-models.openapi.yaml#/components/schemas/ApiError'
+
+  /v1/resources/territories/{id}/photos:
+    get:
+      tags:
+      - Territories
+      summary: Get territory's photos
+      description: Get territory's photos
+      operationId: getTerritoryPhotos
+      parameters:
+      - name: id
+        in: path
+        description: Territory's id (Example&#058; 001197)
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items :
+                   $ref: 'api-territory-photo.openapi.yaml#/components/schemas/Photo'
+        400:
+          description: Resource does not exist.
+          content:
+            application/json:
+              schema:
+                $ref: 'commons-models.openapi.yaml#/components/schemas/ApiError'
+
+components:
+  schemas:
+
+    Territory:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        group:
+          $ref: 'api-territory-group.openapi.yaml#/components/schemas/Group'
+        parent:
+          $ref: '#/components/schemas/Territory'
+        number:
+          type: string
+        name:
+          type: string
+        city:
+          $ref: 'commons-models.openapi.yaml#/components/schemas/City'
+        coordinates:
+          type: string
+        qrCodeLocation:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 8
+        status:
+          minimum: 0
+          maximum: 4
+          type: integer
+          format: int32
+        active:
+          type: boolean
+        bookingAcl:
+          type: integer
+          format: int32
+        slashtag:
+          type: string
+        type:
+          type: string
+          enum: [NORMAL, PHONE, STAND]
+
+    TerritoryIn:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        group:
+          type: integer
+          format: int32
+        parent:
+          type: integer
+          format: int32
+        number:
+          type: string
+        name:
+          type: string
+        city:
+          type: integer
+          format: int32
+        coordinates:
+          type: string
+        qrcodeLocation:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 8
+        status:
+          minimum: 0
+          maximum: 4
+          type: integer
+          format: int32
+        active:
+          type: boolean
+        bookingAcl:
+          type: integer
+          format: int32
+        slashtag:
+          type: string
+        type:
+          type: string
+          enum: [NORMAL, PHONE, STAND]
+
+    TerritoryAddress:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        date:
+          type: string
+          format: date
+        territory:
+          $ref: '#/components/schemas/Territory'
+        zone:
+          $ref: '#/components/schemas/Territory'
+        address:
+          $ref: 'commons-models.openapi.yaml#/components/schemas/Address'
+        User:
+          $ref: 'commons-models.openapi.yaml#/components/schemas/User'
+
+    Preference:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        code:
+          type: string
+        name:
+          type: string
+        type:
+          type: string
+        value:
+          type: string

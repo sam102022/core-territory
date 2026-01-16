@@ -1,0 +1,83 @@
+openapi: 3.0.2
+info:
+  title: Territories
+  description: |
+    Territory API is used to manage cities.
+  contact:
+    name: Sam
+    email: sam102022@hotmail.com
+  version: 1.0.0
+servers:
+  - url: 'http://localhost:8080'
+tags:
+   - name: Cities
+     description: Manage cities
+
+paths:
+  /v1/resources/cities/search:
+    post:
+      tags:
+      - Cities
+      summary: Search cities
+      description: Search cities
+      operationId: searchCities
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CitySearch'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items :
+                  $ref: 'commons-models.openapi.yaml#/components/schemas/City'
+        400:
+          description: Resource does not exist.
+          content:
+            application/json:
+              schema:
+                $ref: 'commons-models.openapi.yaml#/components/schemas/ApiError'
+
+  /v1/resources/cities/{id}:
+    get:
+      tags:
+      - Cities
+      summary: Get city
+      description: Get city
+      operationId: getCity
+      parameters:
+      - name: id
+        in: path
+        description: City's id (Example&#058; 1)
+        required: true
+        schema:
+          type: integer
+          format: int32
+        example: 1
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: 'commons-models.openapi.yaml#/components/schemas/City'
+        400:
+          description: Resource does not exist.
+          content:
+            application/json:
+              schema:
+                $ref: 'commons-models.openapi.yaml#/components/schemas/ApiError'
+ 
+components:
+  schemas:
+    CitySearch:
+      type: object
+      properties:
+        name:
+          type: string
+          example: thouare-sur-loire

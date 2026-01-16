@@ -1,0 +1,172 @@
+openapi: 3.0.2
+info:
+  title: Edition Territory
+  description: |
+    Webapp of edition for the project territory
+  version: 1.0.0
+servers:
+  - url: 'http://localhost:8080'
+tags:
+  - name: EditionResources
+    description: Editions resources for territory
+paths:
+  /v1/resources/territories:
+    post:
+      tags: 
+        - EditionResources
+      summary: Carte de territoire
+      description: Carte de territoire
+      operationId: territories
+      requestBody:
+        description: bean
+        required: true
+        content:
+          'application/json;charset=UTF-8':
+            schema:
+              $ref: '#/components/schemas/MasterTerritoryBeanResource'
+      parameters:
+        - name: format
+          description: Format de sortie
+          in: query
+          required: true
+          schema:
+            type: string
+            enum: [pdf,jpg,jpeg,png]
+      responses:
+        200:
+          $ref: 'commons-models.openapi.yaml#/components/responses/OkStream'
+        '400':
+          $ref: 'commons-models.openapi.yaml#/components/responses/BadRequest'
+        '500':
+          $ref: 'commons-models.openapi.yaml#/components/responses/InternalServerError'
+  /v1/resources/bookings/export:
+    post:
+      tags: 
+        - EditionResources
+      summary: Attributions de territoires
+      description: Attributions de territoires
+      operationId: bookings
+      requestBody:
+        description: bean
+        required: true
+        content:
+          'application/json;charset=UTF-8':
+            schema:
+              $ref: '#/components/schemas/MasterBookingBeanResource'
+      parameters:
+        - name: format
+          description: Format de sortie
+          in: query
+          required: true
+          schema:
+            type: string
+            enum: [pdf,jpg,jpeg,png]
+      responses:
+        200:
+          $ref: 'commons-models.openapi.yaml#/components/responses/OkStream'
+        '400':
+          $ref: 'commons-models.openapi.yaml#/components/responses/BadRequest'
+        '500':
+          $ref: 'commons-models.openapi.yaml#/components/responses/InternalServerError'
+
+components:
+  schemas:
+    MasterTerritoryBeanResource:
+      type: object
+      properties:
+        territoriesBeans:
+          type: array
+          items:
+            $ref: '#/components/schemas/TerritoryBeanResource'
+    MasterBookingBeanResource:
+      type: object
+      properties:
+        bookingsBeans:
+          type: array
+          items:
+            $ref: '#/components/schemas/BookingTerritoryBeanResource'
+    BookingBeanResource:
+      type: object
+      properties:
+        username:
+          type: string
+          example: nom prenom
+        startDate:
+          type: string
+          example: 01/07/2019
+        endDate:
+          type: string
+          example: 01/10/2019
+    BookingTerritoryBeanResource:
+      type: object
+      properties:
+        cityName:
+          type: string
+          example: Nantes
+        territoryName:
+          type: string
+          example: Territoire n°140
+        bookingsBeans:
+          type: array
+          items:
+            $ref: '#/components/schemas/BookingBeanResource'
+    TerritoryBeanResource:
+      type: object
+      properties:
+        number:
+          type: string
+          example: 001
+        format:
+          type: integer
+          format: int32
+          example: 1
+        photos:
+          type: array
+          items:
+            $ref: '#/components/schemas/PhotoBeanResource'
+        addresses:
+          type: array
+          items:
+            $ref: '#/components/schemas/AddressBeanResource'
+        back:
+          type: array
+          items:
+            $ref: '#/components/schemas/BackBeanResource'
+    BackBeanResource:
+      type: object
+      properties:
+        territoryName:
+          type: string
+          example: Territoire TH01
+        urlQrCode:
+          type: string
+          example: http://localhost/territories/1/pdf
+    PhotoBeanResource:
+      type: object
+      properties:
+        angle:
+          type: integer
+          format: int32
+          example: 0
+        qrCodeLocation:
+          type: integer
+          format: int32
+          example: 8
+        url:
+          type: string
+          example: https://images.sftcdn.net/images/t_app-cover-l,f_auto/p/ce2ece60-9b32-11e6-95ab-00163ed833e7/260663710/the-test-fun-for-friends-screenshot.jpg
+        urlQrCode:
+          type: string
+          example: http://localhost/territories/1/pdf
+    AddressBeanResource:
+      type: object
+      properties:
+        name:
+          type: string
+          example: 60 rue des tests
+        zoneName:
+          type: string
+          example: 01
+        date:
+          type: string
+          example: 12/2020

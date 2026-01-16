@@ -1,0 +1,196 @@
+components:
+  responses:
+    OkStream:
+      description: successful operation
+      content:
+        application/octet-stream:
+          schema:
+            type: string
+            format: binary
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+
+  schemas:
+    Address:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        name:
+          type: string
+          example: name
+        zipCode:
+          type: integer
+          format: int32
+          example: 44000
+        cityName:
+          type: string
+          example: Nantes
+        countryName:
+          type: string
+          example: France
+        phone:
+          type: string
+        latitude:
+          type: string
+          example: "47.2608153"
+        longitude:
+          type: string
+          example: "-1.4486446"
+    ApiError:
+      properties:
+        errors:
+          type: array
+          minItems: 1
+          items:
+            $ref: "#/components/schemas/Error"
+    Error:
+      type: object
+      required:
+        - code
+        - description
+      properties:
+        code:
+          type: string
+          minLength: 1
+          maxLength: 100
+        description:
+          type: string
+          minLength: 1
+          maxLength: 500
+        parameters:
+          type: array
+          minItems: 1
+          items:
+            type: string
+            minLength: 1
+            maxLength: 100
+    City:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        department:
+          $ref: '#/components/schemas/Department'
+        zipCode:
+          type: integer
+          format: int32
+        name:
+          type: string
+    Contact:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        group:
+          $ref: 'api-territory-group.openapi.yaml#/components/schemas/Group'
+        title:
+          type: integer
+          format: int32
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        phoneNumber:
+          type: string
+        mobilePhoneNumber:
+          type: string
+        pathFile:
+          type: string
+        contactPreference:
+          type: string
+    Country:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        code:
+          type: string
+        name:
+          type: string
+        language:
+          type: string
+    Department:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        region:
+          $ref: '#/components/schemas/Region'
+        code:
+          type: string
+        name:
+          type: string
+    Region:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        country:
+          $ref: '#/components/schemas/Country'
+        name:
+          type: string
+    PrintSettings:
+      type: object
+      properties:
+        territories:
+          type: array
+          items:
+            $ref: '#/components/schemas/TerritoryRef'
+        format:
+          type: string
+          enum: [pdf,jpg,jpeg,png]
+        formatPhoto:
+          type: string
+          enum: [A5]
+        orientationPhoto:
+          type: string
+          enum: [LANDSCAPE,PORTRAIT]
+        typePhoto:
+          type: string
+          enum: [ORIGINAL,COPY_WITHOUT_CONTEXT,COPY_WITH_CONTEXT]
+        facePhoto:
+          type: string
+          enum: [FRONT,BACK,ANNEXE_1,ANNEXE_2,ANNEXE_3,ANNEXE_4,ANNEXE_5,ANNEXE_6]
+        qrCode:
+          type: boolean
+    TerritoryRef:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        contact:
+          $ref: '#/components/schemas/Contact'
+        username:
+          type: string
+        password:
+          type: string
+        role:
+          type: string
+        reset_password:
+          type: string

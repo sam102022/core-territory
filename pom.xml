@@ -1,0 +1,518 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>com.samos</groupId>
+	<artifactId>core-territory</artifactId>
+	<version>0.0.1</version>
+	<packaging>jar</packaging>
+
+	<name>core-territory</name>
+	
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>3.4.1</version>
+	</parent>
+
+	<properties>
+		<java.version>17</java.version>
+		<maven.compiler.source>${java.version}</maven.compiler.source>
+		<maven.compiler.target>${java.version}</maven.compiler.target>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<contracts-folder>${project.basedir}/contracts</contracts-folder>
+		<target-folder>${basedir}/target/generated-sources</target-folder>
+		
+		<!-- Dépendances Feign -->
+		<feign-jackson.version>8.18.0</feign-jackson.version>
+		<feign-okhttp.version>12.1</feign-okhttp.version>
+		<io.swagger.core.v3-swagger-annotations.version>2.2.27</io.swagger.core.v3-swagger-annotations.version>
+		<jackson-databind-nullable.version>0.2.6</jackson-databind-nullable.version>
+		<springfox.swagger.version>3.0.0</springfox.swagger.version>
+		<springfox.swagger-ui.version>3.0.0</springfox.swagger-ui.version>
+		<springdoc-openapi-ui.version>1.6.15</springdoc-openapi-ui.version>
+
+		<!-- plugins -->
+		<openapi-generator.version>7.10.0</openapi-generator.version>
+
+		<!-- parametre plugin openapi-generator-maven-plugin dans lequel sont générés 
+			les beans -->
+		<services.package.default>com.samos.core</services.package.default>
+		<services.package.spring>${services.package.default}.spring</services.package.spring>
+		<services.package.feign>${services.package.default}.feign</services.package.feign>
+
+	</properties>
+
+	<dependencies>
+		<!--<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jpa</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>jakarta.persistence</groupId>
+			<artifactId>jakarta.persistence-api</artifactId>
+		</dependency>-->
+		<dependency>
+			<groupId>jakarta.annotation</groupId>
+			<artifactId>jakarta.annotation-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>jakarta.xml.bind</groupId>
+			<artifactId>jakarta.xml.bind-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.datatype</groupId>
+			<artifactId>jackson-datatype-jsr310</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.openapitools</groupId>
+			<artifactId>jackson-databind-nullable</artifactId>
+			<version>${jackson-databind-nullable.version}</version>
+		</dependency>
+		<dependency>
+		    <groupId>jakarta.validation</groupId>
+		    <artifactId>jakarta.validation-api</artifactId>
+		</dependency>
+		
+		<dependency>
+		    <groupId>org.springframework.cloud</groupId>
+		    <artifactId>spring-cloud-openfeign-core</artifactId>
+		    <version>4.0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>io.github.openfeign</groupId>
+			<artifactId>feign-okhttp</artifactId>
+			<version>${feign-okhttp.version}</version>
+		</dependency>
+		
+		<!-- legacy -->
+		<dependency>
+			<groupId>javax.validation</groupId>
+			<artifactId>validation-api</artifactId>
+			<version>2.0.1.Final</version>
+		</dependency>
+		<!-- Dépendances Feign -->
+		<dependency>
+			<groupId>io.github.openfeign.form</groupId>
+			<artifactId>feign-form-spring</artifactId>
+			<version>3.8.0</version>
+		</dependency>
+		<dependency>
+			<groupId>io.github.openfeign</groupId>
+			<artifactId>feign-slf4j</artifactId>
+			<version>12.1</version>
+		</dependency>
+		<dependency>
+			<groupId>com.netflix.feign</groupId>
+			<artifactId>feign-jackson</artifactId>
+			<version>${feign-jackson.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.datatype</groupId>
+			<artifactId>jackson-datatype-jsr310</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		
+		<!--SpringFox dependencies -->
+		<dependency>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-swagger2</artifactId>
+			<version>${springfox.swagger.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-swagger-ui</artifactId>
+			<version>${springfox.swagger-ui.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.swagger.core.v3</groupId>
+			<artifactId>swagger-annotations</artifactId>
+			<version>${io.swagger.core.v3-swagger-annotations.version}</version>
+		</dependency>
+		
+		<!--<dependency>
+			<groupId>org.hibernate.validator</groupId>
+			<artifactId>hibernate-validator</artifactId>
+		</dependency>-->
+	</dependencies>
+
+	<build>
+		<finalName>application</finalName>
+		<sourceDirectory>src/main/java</sourceDirectory>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>repackage</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<excludes>
+						<exclude>
+							<groupId>org.projectlombok</groupId>
+							<artifactId>lombok</artifactId>
+						</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.openapitools</groupId>
+				<artifactId>openapi-generator-maven-plugin</artifactId>
+				<version>${openapi-generator.version}</version>
+				<executions>
+					<execution>
+						<id>spring edition</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<inputSpec>${contracts-folder}/resources-edition_territory.openapi.yaml</inputSpec>
+							<output>${target-folder}</output>
+							<generatorName>spring</generatorName>
+							<modelPackage>${services.package.spring}.model.edition</modelPackage>
+							<apiPackage>${services.package.spring}.handler</apiPackage>
+							<generateSupportingFiles>true</generateSupportingFiles>
+							<generateApiTests>false</generateApiTests>
+							<generateModelTests>false</generateModelTests>
+							<configOptions>
+								<!-- Activer l'utilisation de Jakarta -->
+								<useJakartaEe>true</useJakartaEe>
+								<!-- Utilisation d'annotations `@Validated` -->
+								<useBeanValidation>true</useBeanValidation>
+								<!-- Support pour Java 17 -->
+								<java8>false</java8>
+								<java17>true</java17>
+								<interfaceOnly>true</interfaceOnly>
+								<title>Api de gestion des editions territoire</title>
+								<useTags>true</useTags>
+								<skipDefaultInterface>true</skipDefaultInterface>
+								<unhandledException>true</unhandledException>
+							</configOptions>
+						</configuration>
+					</execution>
+					<execution>
+						<id>spring city</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<inputSpec>${contracts-folder}/api-territory-city.openapi.yaml</inputSpec>
+							<output>${target-folder}</output>
+							<generatorName>spring</generatorName>
+							<modelPackage>${services.package.spring}.model</modelPackage>
+							<apiPackage>${services.package.spring}.handler</apiPackage>
+							<generateSupportingFiles>true</generateSupportingFiles>
+							<generateApiTests>false</generateApiTests>
+							<generateModelTests>false</generateModelTests>
+							<configOptions>
+								<!-- Activer l'utilisation de Jakarta -->
+								<useJakartaEe>true</useJakartaEe>
+								<!-- Utilisation d'annotations `@Validated` -->
+								<useBeanValidation>true</useBeanValidation>
+								<!-- Support pour Java 17 -->
+								<java8>false</java8>
+								<java17>true</java17>
+								<interfaceOnly>true</interfaceOnly>
+								<title>Api de gestion des modeles villes</title>
+								<useTags>true</useTags>
+								<skipDefaultInterface>true</skipDefaultInterface>
+								<unhandledException>true</unhandledException>
+							</configOptions>
+						</configuration>
+					</execution>
+					<execution>
+						<id>spring group</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<inputSpec>${contracts-folder}/api-territory-group.openapi.yaml</inputSpec>
+							<output>${target-folder}</output>
+							<generatorName>spring</generatorName>
+							<modelPackage>${services.package.spring}.model</modelPackage>
+							<apiPackage>${services.package.spring}.handler</apiPackage>
+							<generateSupportingFiles>true</generateSupportingFiles>
+							<generateApiTests>false</generateApiTests>
+							<generateModelTests>false</generateModelTests>
+							<configOptions>
+								<!-- Activer l'utilisation de Jakarta -->
+								<useJakartaEe>true</useJakartaEe>
+								<!-- Utilisation d'annotations `@Validated` -->
+								<useBeanValidation>true</useBeanValidation>
+								<!-- Support pour Java 17 -->
+								<java8>false</java8>
+								<java17>true</java17>
+								<interfaceOnly>true</interfaceOnly>
+								<title>Api de gestion des modeles groupe</title>
+								<useTags>true</useTags>
+								<skipDefaultInterface>true</skipDefaultInterface>
+								<unhandledException>true</unhandledException>
+							</configOptions>
+						</configuration>
+					</execution>
+					<execution>
+						<id>spring territory</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<inputSpec>${contracts-folder}/api-territory-territory.openapi.yaml</inputSpec>
+							<output>${target-folder}</output>
+							<generatorName>spring</generatorName>
+							<modelPackage>${services.package.spring}.model</modelPackage>
+							<apiPackage>${services.package.spring}.handler</apiPackage>
+							<generateSupportingFiles>true</generateSupportingFiles>
+							<generateApiTests>false</generateApiTests>
+							<generateModelTests>false</generateModelTests>
+							<configOptions>
+								<!-- Activer l'utilisation de Jakarta -->
+								<useJakartaEe>true</useJakartaEe>
+								<!-- Utilisation d'annotations `@Validated` -->
+								<useBeanValidation>true</useBeanValidation>
+								<!-- Support pour Java 17 -->
+								<java8>false</java8>
+								<java17>true</java17>
+								<interfaceOnly>true</interfaceOnly>
+								<title>Api de gestion des modeles territoire</title>
+								<useTags>true</useTags>
+								<skipDefaultInterface>true</skipDefaultInterface>
+								<unhandledException>true</unhandledException>
+							</configOptions>
+						</configuration>
+					</execution>
+					<execution>
+						<id>spring booking</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<inputSpec>${contracts-folder}/api-territory-booking.openapi.yaml</inputSpec>
+							<output>${target-folder}</output>
+							<generatorName>spring</generatorName>
+							<modelPackage>${services.package.spring}.model</modelPackage>
+							<apiPackage>${services.package.spring}.handler</apiPackage>
+							<generateSupportingFiles>true</generateSupportingFiles>
+							<generateApiTests>false</generateApiTests>
+							<generateModelTests>false</generateModelTests>
+							<configOptions>
+								<!-- Activer l'utilisation de Jakarta -->
+								<useJakartaEe>true</useJakartaEe>
+								<!-- Utilisation d'annotations `@Validated` -->
+								<useBeanValidation>true</useBeanValidation>
+								<!-- Support pour Java 17 -->
+								<java8>false</java8>
+								<java17>true</java17>
+								<interfaceOnly>true</interfaceOnly>
+								<title>Api de gestion des modeles booking</title>
+								<useTags>true</useTags>
+								<skipDefaultInterface>true</skipDefaultInterface>
+								<unhandledException>true</unhandledException>
+							</configOptions>
+						</configuration>
+					</execution>
+					<execution>
+						<id>spring photo</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<inputSpec>${contracts-folder}/api-territory-photo.openapi.yaml</inputSpec>
+							<output>${target-folder}</output>
+							<generatorName>spring</generatorName>
+							<modelPackage>${services.package.spring}.model</modelPackage>
+							<apiPackage>${services.package.spring}.handler</apiPackage>
+							<generateSupportingFiles>true</generateSupportingFiles>
+							<generateApiTests>false</generateApiTests>
+							<generateModelTests>false</generateModelTests>
+							<configOptions>
+								<!-- Activer l'utilisation de Jakarta -->
+								<useJakartaEe>true</useJakartaEe>
+								<!-- Utilisation d'annotations `@Validated` -->
+								<useBeanValidation>true</useBeanValidation>
+								<!-- Support pour Java 17 -->
+								<java8>false</java8>
+								<java17>true</java17>
+								<interfaceOnly>true</interfaceOnly>
+								<title>Api de gestion des modeles photo</title>
+								<useTags>true</useTags>
+								<skipDefaultInterface>true</skipDefaultInterface>
+								<unhandledException>true</unhandledException>
+							</configOptions>
+						</configuration>
+					</execution>
+					<!-- clients feign -->
+					<execution>
+						<id>feign group</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<inputSpec>${project.basedir}/contracts/api-territory-group.openapi.yaml</inputSpec>
+							<output>${basedir}/target/generated-sources</output>
+							<modelPackage>${services.package.feign}.model</modelPackage>
+							<apiPackage>${services.package.feign}.handler</apiPackage>
+							<library>feign</library>
+							<generatorName>java</generatorName>
+							<generateSupportingFiles>true</generateSupportingFiles>
+							<configOptions>
+								<!-- Activer l'utilisation de Jakarta -->
+								<useJakartaEe>true</useJakartaEe>
+								<!-- Utilisation d'annotations `@Validated` -->
+								<useBeanValidation>true</useBeanValidation>
+								<!-- Support pour Java 17 -->
+								<java8>false</java8>
+								<java17>true</java17>
+								<serializableModel>true</serializableModel>
+								<dateLibrary>java8</dateLibrary>
+								<jsr310>true</jsr310>
+								<useBeanValidation>true</useBeanValidation>
+								<performBeanValidation>true</performBeanValidation>
+								<title>Api de gestion des groupes</title>
+								<useTags>true</useTags>
+							</configOptions>
+						</configuration>
+					</execution>
+					<execution>
+						<id>feign city</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<inputSpec>${project.basedir}/contracts/api-territory-city.openapi.yaml</inputSpec>
+							<output>${basedir}/target/generated-sources</output>
+							<modelPackage>${services.package.feign}.model</modelPackage>
+							<apiPackage>${services.package.feign}.handler</apiPackage>
+							<library>feign</library>
+							<generatorName>java</generatorName>
+							<generateSupportingFiles>true</generateSupportingFiles>
+							<configOptions>
+								<!-- Activer l'utilisation de Jakarta -->
+								<useJakartaEe>true</useJakartaEe>
+								<!-- Utilisation d'annotations `@Validated` -->
+								<useBeanValidation>true</useBeanValidation>
+								<!-- Support pour Java 17 -->
+								<java8>false</java8>
+								<java17>true</java17>
+								<serializableModel>true</serializableModel>
+								<dateLibrary>java8</dateLibrary>
+								<jsr310>true</jsr310>
+								<useBeanValidation>true</useBeanValidation>
+								<performBeanValidation>true</performBeanValidation>
+								<title>Api de gestion des villes</title>
+								<useTags>true</useTags>
+							</configOptions>
+						</configuration>
+					</execution>
+					<execution>
+						<id>feign territory</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<inputSpec>${project.basedir}/contracts/api-territory-territory.openapi.yaml</inputSpec>
+							<output>${basedir}/target/generated-sources</output>
+							<modelPackage>${services.package.feign}.model</modelPackage>
+							<apiPackage>${services.package.feign}.handler</apiPackage>
+							<library>feign</library>
+							<generatorName>java</generatorName>
+							<generateSupportingFiles>true</generateSupportingFiles>
+							<configOptions>
+								<!-- Activer l'utilisation de Jakarta -->
+								<useJakartaEe>true</useJakartaEe>
+								<!-- Utilisation d'annotations `@Validated` -->
+								<useBeanValidation>true</useBeanValidation>
+								<!-- Support pour Java 17 -->
+								<java8>false</java8>
+								<java17>true</java17>
+								<serializableModel>true</serializableModel>
+								<dateLibrary>java8</dateLibrary>
+								<jsr310>true</jsr310>
+								<useBeanValidation>true</useBeanValidation>
+								<performBeanValidation>true</performBeanValidation>
+								<title>Api de gestion des territoires</title>
+								<useTags>true</useTags>
+							</configOptions>
+						</configuration>
+					</execution>
+					<execution>
+						<id>feign booking</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<inputSpec>${project.basedir}/contracts/api-territory-booking.openapi.yaml</inputSpec>
+							<output>${basedir}/target/generated-sources</output>
+							<modelPackage>${services.package.feign}.model</modelPackage>
+							<apiPackage>${services.package.feign}.handler</apiPackage>
+							<library>feign</library>
+							<generatorName>java</generatorName>
+							<generateSupportingFiles>true</generateSupportingFiles>
+							<configOptions>
+								<!-- Activer l'utilisation de Jakarta -->
+								<useJakartaEe>true</useJakartaEe>
+								<!-- Utilisation d'annotations `@Validated` -->
+								<useBeanValidation>true</useBeanValidation>
+								<!-- Support pour Java 17 -->
+								<java8>false</java8>
+								<java17>true</java17>
+								<serializableModel>true</serializableModel>
+								<dateLibrary>java8</dateLibrary>
+								<jsr310>true</jsr310>
+								<useBeanValidation>true</useBeanValidation>
+								<performBeanValidation>true</performBeanValidation>
+								<title>Api de gestion des attributions</title>
+								<useTags>true</useTags>
+							</configOptions>
+						</configuration>
+					</execution>
+					<execution>
+						<id>feign photo</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<inputSpec>${project.basedir}/contracts/api-territory-photo.openapi.yaml</inputSpec>
+							<output>${basedir}/target/generated-sources</output>
+							<modelPackage>${services.package.feign}.model</modelPackage>
+							<apiPackage>${services.package.feign}.handler</apiPackage>
+							<library>feign</library>
+							<generatorName>java</generatorName>
+							<generateSupportingFiles>true</generateSupportingFiles>
+							<configOptions>
+								<!-- Activer l'utilisation de Jakarta -->
+								<useJakartaEe>true</useJakartaEe>
+								<!-- Utilisation d'annotations `@Validated` -->
+								<useBeanValidation>true</useBeanValidation>
+								<!-- Support pour Java 17 -->
+								<java8>false</java8>
+								<java17>true</java17>
+								<serializableModel>true</serializableModel>
+								<dateLibrary>java8</dateLibrary>
+								<jsr310>true</jsr310>
+								<useBeanValidation>true</useBeanValidation>
+								<performBeanValidation>true</performBeanValidation>
+								<title>Api de gestion des photos</title>
+								<useTags>true</useTags>
+							</configOptions>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+</project>

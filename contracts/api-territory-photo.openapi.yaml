@@ -1,0 +1,223 @@
+openapi: 3.0.2
+info:
+  title: Territories
+  description: |
+    Territory API is used to manage territories.
+  contact:
+    name: Sam
+    email: sam102022@hotmail.com
+  version: 1.0.0
+servers:
+  - url: 'http://localhost:8080'
+tags:
+   - name: Photos
+     description: Manage photos
+
+paths:
+  /v1/resources/photos/{id}:
+    get:
+      tags:
+      - Photos
+      summary: Get photo
+      description: Get photo
+      operationId: getPhoto
+      parameters:
+      - name: id
+        in: path
+        description: Photo's id
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Photo'
+        400:
+          description: Resource does not exist.
+          content:
+            application/json:
+              schema:
+                $ref: 'commons-models.openapi.yaml#/components/schemas/ApiError'
+    put:
+      tags:
+      - Photos
+      summary: Update photo
+      description: Update photo
+      operationId: updatePhoto
+      parameters:
+      - name: id
+        in: path
+        description: Photo's id
+        required: true
+        schema:
+          type: integer
+          format: int32
+      requestBody:
+        content: 
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/PhotoIn'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Photo'
+        400:
+          description: Resource does not exist.
+          content:
+            application/json:
+              schema:
+                $ref: 'commons-models.openapi.yaml#/components/schemas/ApiError'
+
+  /v1/resources/photos:
+    post:
+      tags: 
+        - Photos
+      summary: Ajoute ou modifie une photo
+      description: Ajoute ou modifie une photo
+      operationId: createUpdatePhoto
+      requestBody:
+        description: bean
+        required: true
+        content:
+          'application/json;charset=UTF-8':
+            schema:
+              $ref: '#/components/schemas/PhotoIn'
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Photo'
+        '400':
+          $ref: 'commons-models.openapi.yaml#/components/responses/BadRequest'
+        '500':
+          $ref: 'commons-models.openapi.yaml#/components/responses/InternalServerError'
+
+  /v1/resources/photos/export:
+    post:
+      tags: 
+        - Photos
+      summary: Export de photos sous format pour l'impression
+      description: Export de photos
+      operationId: export
+      parameters:
+      - name: territoryIds
+        in: query
+        description: Identifiants de territoires
+        required: true
+        schema:
+          type: array,
+          items: {
+            type: integer,
+            format: int32
+          }
+      requestBody:
+        description: bean
+        required: true
+        content:
+          'application/json;charset=UTF-8':
+            schema:
+              $ref: 'commons-models.openapi.yaml#/components/schemas/PrintSettings'
+      responses:
+        200:
+          $ref: 'commons-models.openapi.yaml#/components/responses/OkStream'
+        '400':
+          $ref: 'commons-models.openapi.yaml#/components/responses/BadRequest'
+        '500':
+          $ref: 'commons-models.openapi.yaml#/components/responses/InternalServerError'
+          
+components:
+  schemas:
+    Photo:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        territory:
+          $ref: 'api-territory-territory.openapi.yaml#/components/schemas/Territory'
+        name:
+          type: string
+        format:
+          maximum: 2
+          minimum: 0
+          type: integer
+          format: int32
+        orientation:
+          maximum: 1
+          minimum: 0
+          type: integer
+          format: int32
+        type:
+          maximum: 2
+          minimum: 0
+          type: integer
+          format: int32
+        face:
+          maximum: 8
+          minimum: 0
+          type: integer
+          format: int32
+        pathFile:
+          type: string
+        cloudinaryId:
+          type: string
+        originalUrl:
+          type: string
+        largeUrl:
+          type: string
+        mediumUrl:
+          type: string
+        smallUrl:
+          type: string
+        thumbnailUrl:
+          type: string
+        active:
+          maximum: 1
+          minimum: 0
+          type: integer
+          format: int32
+
+    PhotoIn:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        territory:
+          type: integer
+          format: int32
+        name:
+          type: string
+        format:
+          type: string
+          enum: [A5]
+        orientation:
+          type: string
+          enum: [landscape,portrait]
+        type:
+          type: string
+          enum: [ORIGINAL,COPY_WITHOUT_CONTEXT,COPY_WITH_CONTEXT]
+        face:
+          type: string
+          enum: [FRONT,BACK,ANNEXE_1,ANNEXE_2,ANNEXE_3,ANNEXE_4,ANNEXE_5,ANNEXE_6]
+        pathFile:
+          type: string
+        blob:
+          type: string
+          format: byte
+        cloudinaryId:
+          type: string
+        active:
+          maximum: 1
+          minimum: 0
+          type: integer
+          format: int32
